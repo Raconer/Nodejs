@@ -23,15 +23,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 // Source pretty
 app.locals.pretty = true;
 
+///////////////////CREATE
 // GET('/topic/add')
 app.get('/topic/add', function(req, res){
   console.log('Connect /topic/add GET');
   var sql = 'SELECT * FROM topic';
   db.query(sql).then(function(result) {
-    if(result.length === 0){
-      console.log('There is no record');
-      res.status(500).send('Internal server Error');
-    }
     console.log(result);
     res.render('add', {topics:result});
   });
@@ -51,11 +48,11 @@ app.post('/topic/add', function(req, res) {
       author:author
     }
   }).then(function(results) {
-    console.log(results);
     res.redirect('/topic/'+encodeURIComponent(results[0]['@rid']));
   });
 });
 
+///////////////////READ
 // GET('/topic')
 app.get(['/topic', '/topic/:id'], function(req, res) {
   var sql = 'SELECT * FROM topic';
@@ -74,6 +71,59 @@ app.get(['/topic', '/topic/:id'], function(req, res) {
   });
 });
 
+///////////////////UPDATE
+// GET('/topic/:id/edit')
+app.get('/topic/:id/edit', function(req, res){
+  console.log('Connect /topic/:id/edit GET');
+  var sql = 'SELECT * FROM topic';
+  var id = req.params.id;
+  db.query(sql).then(function(results) {
+    var sql = 'SELECT * FROM topic WHERE @rid=:rid';
+    db.query(sql, {params:{rid:id}}).then(function (result) {
+        res.render('edit', {topics:results, topic:result[0]});
+    });
+  });
+});
+
+// POST('/topic/:id/edit')
+app.post('/topic/:id/edit', function(req, res){
+  var sql = 'UPDATE topic SET title=:t, description=:d, author=:a WHERE @rid=:rid';
+  var id = req.params.id;
+  var title = req.body.title;
+  var desc = req.body.description;
+  var author = req.body.author;
+  db.query(sql,{
+      params:{
+        t:title,
+        d:desc,
+        a:author,
+        rid:id
+      }
+    }).then(function(topics) {
+      res.redirect('/topic/'+encodeURIComponent(id));
+  });
+});
+///////////////////DELETE
+app.get('/topic/:id/delete', function(req, res) {
+  var id = req.params.id;
+  var sql = 'SELECT * FROM topic';
+  db.query(sql).then(function(topics) {
+    var sql = 'SELECT * FROM topic WHERE @rid=:rid';
+    db.query(sql, {params:{rid: id}}).then(function(topic) {
+      res.render('delete', {topics:topics, topic:topic[0]});
+    });
+  });
+});
+
+// POST('/topic/:id/edit')
+app.post('/topic/:id/delete', function(req, res){
+  var sql = 'DELETE FROM topic WHERE @rid=:rid';
+  var id = req.params.id;
+  db.query(sql,{params:{rid:id}}).then(function(topics) {
+      res.redirect('/topic');
+  });
+});
+////////////////////////////
 // Connect server
 app.listen(3000, function() {
   console.log('Connect Server 3000PORT');

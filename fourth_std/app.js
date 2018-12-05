@@ -1,9 +1,10 @@
+// EXPRESS NPM 사용
 var express = require('express');
 var app = express();
-
-app.locals.pretty=true;
 app.set('views', './views');
 app.set('view engine', 'jade');
+
+app.locals.pretty=true;
 
 app.get('/template', function(req, res) {
   res.render('template');

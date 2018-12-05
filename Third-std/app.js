@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+// HTML 코드 정리
 app.locals.pretty=true;
 app.set('views', './views');
 app.set('view engine', 'jade');
@@ -35,6 +36,7 @@ app.get('/dynamic', function(req, res) {
   res.send(outPut);
 });
 
+// 서버 시작
 app.listen(3000, function() {
   console.log('Connection 3000 port');
 });
