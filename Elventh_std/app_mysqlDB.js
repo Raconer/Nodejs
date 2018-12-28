@@ -129,6 +129,19 @@ app.post('/topic/:id/edit', function(req, res) {
     }
 });
 
+app.get('/topic/:id/edit', function(req, res) {
+  var id = req.params.id;
+  var sql = 'SELECT * FROM topic WHERE id = ?';
+
+  conn.sql(sql,[id], function(err, row, fields) {
+    if(err){
+      console.log('There is no id');
+      res.status(500).send('Internal Server Error');
+    }else{
+
+    }
+  });
+});
 
 
 app.listen(3000, function() {
